@@ -1,0 +1,37 @@
+name: shopnest
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/shopnest
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@shopnest.test}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin1234}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:80"
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
