@@ -1,17 +1,23 @@
 import Product from './models/Product.js';
 import User from './models/User.js';
 
-// Logins for trying the store locally. Before deploying anywhere public, remove the shopper
-// and set ADMIN_EMAIL / ADMIN_PASSWORD (read only when the account is first created).
-const SEED_USERS = [
-  { name: 'Demo Shopper', email: 'demo@shopnest.test', password: 'demo1234' },
-  {
-    name: 'Store Admin',
-    email: process.env.ADMIN_EMAIL || 'admin@shopnest.test',
-    password: process.env.ADMIN_PASSWORD || 'admin1234',
-    isAdmin: true,
-  },
-];
+// Locally this seeds a demo shopper and a default admin. Public deploys set SEED_DEMO_ACCOUNTS=false,
+// which skips both and only creates the admin from ADMIN_EMAIL / ADMIN_PASSWORD.
+// The admin env vars are read only when that account is first created.
+function seedUsers() {
+  const demoAccounts = process.env.SEED_DEMO_ACCOUNTS !== 'false';
+  const users = [];
+  if (demoAccounts) users.push({ name: 'Demo Shopper', email: 'demo@shopnest.test', password: 'demo1234' });
+
+  const email = process.env.ADMIN_EMAIL || (demoAccounts ? 'admin@shopnest.test' : '');
+  const password = process.env.ADMIN_PASSWORD || (demoAccounts ? 'admin1234' : '');
+  if (email && password) {
+    users.push({ name: 'Store Admin', email: email.toLowerCase().trim(), password, isAdmin: true });
+  } else {
+    console.warn('ADMIN_EMAIL / ADMIN_PASSWORD are not set, so no admin account was created');
+  }
+  return users;
+}
 
 const PRODUCTS = [
   { name: 'Wireless Noise-Cancelling Headphones', category: 'Electronics', price: 4999, stock: 18, rating: 4.7, emoji: '🎧',
@@ -53,7 +59,7 @@ export async function seed() {
     await Product.insertMany(PRODUCTS);
     console.log(`Seeded ${PRODUCTS.length} products`);
   }
-  for (const user of SEED_USERS) {
+  for (const user of seedUsers()) {
     if (await User.exists({ email: user.email })) continue;
     await User.create(user);
     console.log(`Created ${user.isAdmin ? 'admin' : 'demo'} user ${user.email}`);

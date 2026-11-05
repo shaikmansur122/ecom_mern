@@ -1,0 +1,21 @@
+# Render Blueprint. In Render: New > Blueprint > pick this repo.
+# Render asks for the values marked "sync: false" (see README > Host it for free).
+services:
+  - type: web
+    name: shopnest
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SEED_DEMO_ACCOUNTS
+        value: "false"

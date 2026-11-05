@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { MONGO_URI, PORT } from './config.js';
+import path from 'node:path';
+import { MONGO_URI, PORT, PUBLIC_DIR } from './config.js';
 import authRoutes from './routes/auth.js';
 import orderRoutes from './routes/orders.js';
 import productRoutes from './routes/products.js';
@@ -13,6 +14,16 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+
+if (PUBLIC_DIR) {
+  app.use('/assets', express.static(path.join(PUBLIC_DIR, 'assets'), { immutable: true, maxAge: '1y', fallthrough: false }));
+  app.use(express.static(PUBLIC_DIR, { index: false }));
+  // Single-page app: any other GET outside /api gets index.html so React Router can handle it.
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+  });
+}
 
 app.use((req, res) => res.status(404).json({ message: 'Not found' }));
 
