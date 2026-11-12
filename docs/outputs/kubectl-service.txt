@@ -1,0 +1,2 @@
+﻿NAME               TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+shopnest-service   NodePort   10.98.102.19   <none>        80:30080/TCP   75s   app=shopnest

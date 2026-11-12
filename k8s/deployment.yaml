@@ -1,0 +1,55 @@
+﻿# ShopNest web app (Express API + React build in one container) from Docker Hub.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopnest
+  labels:
+    app: shopnest
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shopnest
+  template:
+    metadata:
+      labels:
+        app: shopnest
+    spec:
+      containers:
+        - name: shopnest
+          image: mansur124/shopnest:1.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+            - name: MONGO_URI
+              value: mongodb://mongo:27017/shopnest
+            # Demo values for the class project. For anything real, use a Kubernetes Secret.
+            - name: JWT_SECRET
+              value: minikube-demo-secret
+            - name: SEED_DEMO_ACCOUNTS
+              value: "false"
+            - name: ADMIN_EMAIL
+              value: admin@shopnest.test
+            - name: ADMIN_PASSWORD
+              value: admin1234
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 384Mi

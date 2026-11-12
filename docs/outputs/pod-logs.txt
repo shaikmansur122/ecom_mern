@@ -1,0 +1,5 @@
+﻿[pod/shopnest-5cc6f5c7d8-528cr/shopnest] MongoDB not reachable yet (attempt 1/15), retrying...
+[pod/shopnest-5cc6f5c7d8-528cr/shopnest] API running on port 5000
+[pod/shopnest-5cc6f5c7d8-q428v/shopnest] Seeded 16 products
+[pod/shopnest-5cc6f5c7d8-q428v/shopnest] Created admin user admin@shopnest.test
+[pod/shopnest-5cc6f5c7d8-q428v/shopnest] API running on port 5000

@@ -54,14 +54,31 @@ const PRODUCTS = [
     description: 'Size 5 machine-stitched football for training and matches. Back in stock soon.' },
 ];
 
+// Several replicas can start at once (e.g. in Kubernetes) and all run this, so it must be race-safe:
+// the unique indexes (product name, user email) are the real guard, and losing a race is not an error.
 export async function seed() {
+  await Promise.all([Product.init(), User.init()]); // make sure the unique indexes exist first
+
   if ((await Product.estimatedDocumentCount()) === 0) {
-    await Product.insertMany(PRODUCTS);
-    console.log(`Seeded ${PRODUCTS.length} products`);
+    const { upsertedCount } = await Product.bulkWrite(
+      PRODUCTS.map((product) => ({
+        updateOne: { filter: { name: product.name }, update: { $setOnInsert: product }, upsert: true },
+      })),
+      { ordered: false }
+    ).catch((err) => {
+      if (err.code === 11000 || err.writeErrors?.every((e) => e.code === 11000)) return { upsertedCount: 0 };
+      throw err;
+    });
+    if (upsertedCount) console.log(`Seeded ${upsertedCount} products`);
   }
+
   for (const user of seedUsers()) {
     if (await User.exists({ email: user.email })) continue;
-    await User.create(user);
-    console.log(`Created ${user.isAdmin ? 'admin' : 'demo'} user ${user.email}`);
+    try {
+      await User.create(user);
+      console.log(`Created ${user.isAdmin ? 'admin' : 'demo'} user ${user.email}`);
+    } catch (err) {
+      if (err.code !== 11000) throw err; // another replica created it first
+    }
   }
 }

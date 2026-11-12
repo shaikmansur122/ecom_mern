@@ -1,0 +1,13 @@
+﻿NAME                       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                   SELECTOR
+deployment.apps/mongo      1/1     1            1           75s   mongo        mongo:7                  app=mongo
+deployment.apps/shopnest   2/2     2            2           74s   shopnest     mansur124/shopnest:1.1   app=shopnest
+
+NAME                            READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+pod/mongo-69b496544b-ls9jp      1/1     Running   0          75s   10.244.0.9    minikube   <none>           <none>
+pod/shopnest-5cc6f5c7d8-528cr   1/1     Running   0          74s   10.244.0.10   minikube   <none>           <none>
+pod/shopnest-5cc6f5c7d8-q428v   1/1     Running   0          74s   10.244.0.11   minikube   <none>           <none>
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/kubernetes         ClusterIP   10.96.0.1        <none>        443/TCP        12m   <none>
+service/mongo              ClusterIP   10.101.247.211   <none>        27017/TCP      75s   app=mongo
+service/shopnest-service   NodePort    10.98.102.19     <none>        80:30080/TCP   74s   app=shopnest

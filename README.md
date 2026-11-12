@@ -73,6 +73,21 @@ Notes:
 - Free Render services sleep after 15 minutes without visitors, so the first visit after that takes 30 to 60 seconds.
 - Every push to `main` redeploys automatically.
 
+## Run on Kubernetes (Minikube)
+
+The image is on Docker Hub: https://hub.docker.com/r/mansur124/shopnest
+
+```bash
+minikube start --driver=docker
+kubectl apply -f k8s/mongo.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+minikube service shopnest-service
+```
+
+The full step-by-step report, with real command output and screenshots, is in
+[docs/KUBERNETES_REPORT.md](docs/KUBERNETES_REPORT.md).
+
 ## How it fits together
 
 ```
@@ -116,6 +131,8 @@ client/            React app (Vite)
 docker-compose.yml local stack: mongo + API + nginx
 Dockerfile         single-container image for hosting
 render.yaml        Render Blueprint
+k8s/               Kubernetes manifests (deployment, service, mongo)
+docs/              Kubernetes deployment report, screenshots, command outputs
 ```
 
 ## Developing without Docker

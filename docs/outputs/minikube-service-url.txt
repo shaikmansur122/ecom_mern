@@ -1,0 +1,1 @@
+﻿minikube service shopnest-service --url  ->  http://127.0.0.1:61626

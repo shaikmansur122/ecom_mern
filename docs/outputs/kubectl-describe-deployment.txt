@@ -1,0 +1,9 @@
+﻿Name:                   shopnest
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+    Image:      mansur124/shopnest:1.1
+    Port:       5000/TCP
+    Host Port:  0/TCP
+    Liveness:   http-get http://:5000/api/health delay=15s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:5000/api/health delay=5s timeout=1s period=5s #success=1 #failure=3
+      PORT:                5000

@@ -1,0 +1,4 @@
+﻿REPOSITORY           TAG       SIZE
+mansur124/shopnest   1.1       300MB
+mansur124/shopnest   latest    300MB
+mansur124/shopnest   1.0       300MB
